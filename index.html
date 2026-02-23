@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🇲🇲 မြန်မာကုဒ် v2.0.0 - Myanmar Programming Language</title>
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="မြန်မာကုဒ် v2.0.0 - Myanmar Programming Language">
+    <meta property="og:description" content="မြန်မာဘာသာဖြင့် ပရိုဂရမ်းမင်းရေးသားနိုင်သော ပလက်ဖောင်း | Keywords ၁၂၇ လုံး">
+    <meta property="og:image" content="https://progamming-language-myanmar-code-os.ccwu.cc/assets/og-image.png">
+    <meta property="og:url" content="https://progamming-language-myanmar-code-os.ccwu.cc">
+    <meta property="og:type" content="website">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="မြန်မာကုဒ် v2.0.0 - Myanmar Programming Language">
+    <meta name="twitter:description" content="မြန်မာဘာသာဖြင့် ပရိုဂရမ်းမင်းရေးသားနိုင်သော ပလက်ဖောင်း | Keywords ၁၂၇ လုံး">
+    <meta name="twitter:image" content="https://progamming-language-myanmar-code-os.ccwu.cc/assets/twitter-card.png">
+    
+    <!-- Fonts & Styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #00ff9d;
+            --primary-dark: #00cc7d;
+            --bg: #0a0c14;
+            --bg-light: #1a1e2a;
+            --text: #e0e0e0;
+            --text-light: #a0a0a0;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', 'Padauk', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        header {
+            background: var(--bg-light);
+            border-bottom: 2px solid var(--primary);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .nav a {
+            color: var(--text);
+            text-decoration: none;
+            margin-left: 30px;
+            transition: color 0.3s;
+        }
+        
+        .nav a:hover {
+            color: var(--primary);
+        }
+        
+        /* Hero */
+        .hero {
+            padding: 100px 0;
+            background: linear-gradient(135deg, var(--bg) 0%, var(--bg-light) 100%);
+        }
+        
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+        
+        .hero .highlight {
+            color: var(--primary);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 30px;
+        }
+        
+        .hero-code {
+            background: var(--bg);
+            border: 1px solid var(--primary);
+            border-radius: 10px;
+            padding: 20px;
+            font-family: monospace;
+        }
+        
+        .hero-code .line {
+            margin: 10px 0;
+        }
+        
+        .hero-code .keyword { color: var(--primary); }
+        .hero-code .string { color: #ffaa00; }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: var(--primary);
+            color: var(--bg);
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,255,157,0.3);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: var(--bg);
+        }
+        
+        /* Features */
+        .section {
+            padding: 80px 0;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-light);
+            margin-bottom: 60px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background: var(--bg-light);
+            border: 1px solid rgba(0,255,157,0.1);
+            border-radius: 10px;
+            padding: 30px;
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 15px;
+        }
+        
+        .feature-card p {
+            color: var(--text-light);
+        }
+        
+        /* Keywords Section */
+        .keywords-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            background: var(--bg-light);
+            padding: 30px;
+            border-radius: 10px;
+            border: 1px solid rgba(0,255,157,0.1);
+        }
+        
+        .keyword-item {
+            background: var(--bg);
+            color: var(--primary);
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-family: monospace;
+            border: 1px solid rgba(0,255,157,0.2);
+        }
+        
+        .keyword-count {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+        
+        /* Installation */
+        .install-box {
+            background: var(--bg-light);
+            border: 1px solid var(--primary);
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .install-command {
+            background: var(--bg);
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 1.2rem;
+            margin: 20px 0;
+            border: 1px solid rgba(0,255,157,0.2);
+        }
+        
+        .install-command code {
+            color: var(--primary);
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--bg-light);
+            border-top: 1px solid rgba(0,255,157,0.1);
+            padding: 40px 0;
+            text-align: center;
+            color: var(--text-light);
+        }
+        
+        .footer-links {
+            margin-top: 20px;
+        }
+        
+        .footer-links a {
+            color: var(--text);
+            text-decoration: none;
+            margin: 0 15px;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        @media (max-width: 768px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .nav a {
+                margin-left: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">🇲🇲 မြန်မာကုဒ်</a>
+                <div class="nav">
+                    <a href="#features">အင်္ဂါရပ်များ</a>
+                    <a href="#keywords">Keywords</a>
+                    <a href="#install">တပ်ဆင်ရန်</a>
+                    <a href="https://github.com/meonnmi-ops/Myanmar-programming-language-" target="_blank">GitHub</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div>
+                    <h1><span class="highlight">မြန်မာကုဒ်</span><br>v2.0.0</h1>
+                    <p>မြန်မာဘာသာစကားဖြင့် ရေးသားနိုင်သော ပရိုဂရမ်းမင်းဘာသာစကား</p>
+                    <div style="display: flex; gap: 15px;">
+                        <a href="#install" class="btn">စတင်ရန်</a>
+                        <a href="https://github.com/meonnmi-ops/Myanmar-programming-language-" class="btn btn-outline">GitHub</a>
+                    </div>
+                </div>
+                <div class="hero-code">
+                    <div class="line"><span class="keyword">ပုံနှိပ်</span> <span class="string">"မင်္ဂလာပါ မြန်မာကုဒ်"</span></div>
+                    <div class="line"><span class="keyword">ကိန်း</span> x = ၁၀</div>
+                    <div class="line"><span class="keyword">ကိန်း</span> y = ၂၀</div>
+                    <div class="line"><span class="keyword">ပုံနှိပ်</span> x + y</div>
+                    <div class="line"><span style="color: #666;"># Output: 30</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="features" class="section">
+        <div class="container">
+            <h2 class="section-title">ထူးခြားချက်များ</h2>
+            <p class="section-subtitle">မြန်မာကုဒ် v2.0.0 မှာ ပါဝင်တဲ့ အင်္ဂါရပ်များ</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-key"></i></div>
+                    <h3>Keywords ၁၂၇ လုံး</h3>
+                    <p>မြန်မာလို keywords အပြည့်အစုံ ပါဝင်သည်။ မြန်မာလိုပဲ ကုဒ်ရေးနိုင်သည်။</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-calculator"></i></div>
+                    <h3>မြန်မာဂဏန်းများ</h3>
+                    <p>မြန်မာဂဏန်း (၀-၉) ကို တိုက်ရိုက်အသုံးပြုနိုင်။ ဥပမာ - ၁၀ + ၂၀ = ၃၀</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-wrench"></i></div>
+                    <h3>Smart Fix</h3>
+                    <p>အလိုအလျောက် အမှားပြင်ဆင်ခြင်းစနစ် ပါဝင်သည်။</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-globe"></i></div>
+                    <h3>Browser Support</h3>
+                    <p>Browser မှာတိုက်ရိုက် run နိုင်သည်။</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-python"></i></div>
+                    <h3>PyPI Package</h3>
+                    <p><code>pip install myanmar-code</code> ဖြင့် တပ်ဆင်နိုင်</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fab fa-github"></i></div>
+                    <h3>Open Source</h3>
+                    <p>GitHub မှာ source code အားလုံး ဖွင့်လှစ်ထား</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="keywords" class="section" style="background: var(--bg-light);">
+        <div class="container">
+            <h2 class="section-title">Keywords များ</h2>
+            <p class="section-subtitle">မြန်မာကုဒ် v2.0.0 မှာ ပါဝင်တဲ့ Keywords စုစုပေါင်း ၁၂၇ လုံး</p>
+            
+            <div class="keywords-grid">
+                <div class="keyword-item">ကိန်း</div>
+                <div class="keyword-item">အတည်</div>
+                <div class="keyword-item">နေရာ</div>
+                <div class="keyword-item">လုပ်ဆောင်ချက်</div>
+                <div class="keyword-item">ပြန်ပေး</div>
+                <div class="keyword-item">ပြန်ပို့</div>
+                <div class="keyword-item">အကယ်၍</div>
+                <div class="keyword-item">မဟုတ်ပါက</div>
+                <div class="keyword-item">မဟုတ်လျှင်</div>
+                <div class="keyword-item">သို့မဟုတ်</div>
+                <div class="keyword-item">ရွေးချယ်</div>
+                <div class="keyword-item">ကိစ္စ</div>
+                <div class="keyword-item">အတွက်</div>
+                <div class="keyword-item">အကြိမ်အားလုံးအတွက်</div>
+                <div class="keyword-item">သံသရာ</div>
+                <div class="keyword-item">လုပ်နေစဉ်</div>
+                <div class="keyword-item">ပတ်လမ်း</div>
+                <div class="keyword-item">ရပ်</div>
+                <div class="keyword-item">ဆက်လုပ်</div>
+                <div class="keyword-item">ထားပါ</div>
+                <div class="keyword-item">မှတ်ထား</div>
+                <div class="keyword-item">သွားပါ</div>
+                <div class="keyword-item">အဆုံး</div>
+                <div class="keyword-item">ပြီး</div>
+                <div class="keyword-item">ပြီးပြီ</div>
+                <div class="keyword-item">ဒါဆို</div>
+                <div class="keyword-item">လုပ်ပါ</div>
+                <div class="keyword-item">လုပ်ရန်</div>
+                <div class="keyword-item">ပုံနှိပ်</div>
+                <div class="keyword-item">ပြောပါ</div>
+                <div class="keyword-item">ထုတ်ပြ</div>
+                <div class="keyword-item">ရိုက်ပါ</div>
+                <div class="keyword-item">ပြပေးမည်</div>
+                <div class="keyword-item">ရေးပြမည်</div>
+                <div class="keyword-item">မေးမြန်း</div>
+                <div class="keyword-item">ထည့်သွင်း</div>
+                <div class="keyword-item">ထည့်ပါ</div>
+                <div class="keyword-item">မေးပါ</div>
+                <div class="keyword-item">တောင်းဆိုမည်</div>
+                <div class="keyword-item">သိမ်းဆည်းမည်</div>
+                <div class="keyword-item">ဖတ်မည်</div>
+                <div class="keyword-item">ကူးယူပါ</div>
+                <div class="keyword-item">မှန်</div>
+                <div class="keyword-item">မှား</div>
+                <div class="keyword-item">ဘာမှမရှိ</div>
+                <div class="keyword-item">မသတ်မှတ်ရသေး</div>
+                <div class="keyword-item">မှန်သည်</div>
+                <div class="keyword-item">မှားသည်</div>
+                <div class="keyword-item">အမှန်</div>
+                <div class="keyword-item">အမှား</div>
+                <div class="keyword-item">ရှိ</div>
+                <div class="keyword-item">မရှိ</div>
+                <div class="keyword-item">စာရင်း</div>
+                <div class="keyword-item">အရာဝတ္ထု</div>
+                <div class="keyword-item">အဘိဓာန်</div>
+                <div class="keyword-item">ဇယား</div>
+                <div class="keyword-item">အစီအစဉ်</div>
+            </div>
+            <div class="keyword-count">
+                <i class="fas fa-key"></i> စုစုပေါင်း Keywords ၁၂၇ လုံး (အပြည့်အစုံကို GitHub မှာကြည့်ရန်)
+            </div>
+        </div>
+    </section>
+    
+    <section id="install" class="section">
+        <div class="container">
+            <h2 class="section-title">စတင်အသုံးပြုရန်</h2>
+            <p class="section-subtitle">တစ်ခုတည်းသော command နဲ့ မြန်မာကုဒ်ကို စတင်သုံးနိုင်ပါပြီ</p>
+            
+            <div class="install-box">
+                <i class="fas fa-download" style="font-size: 3rem; color: var(--primary); margin-bottom: 20px;"></i>
+                <h3>PyPI မှ တပ်ဆင်ရန်</h3>
+                <div class="install-command">
+                    <code>pip install myanmar-code</code>
+                </div>
+                <p style="color: var(--text-light); margin-bottom: 30px;">ဗားရှင်း 2.0.0 (Keywords ၁၂၇ လုံး)</p>
+                
+                <h4 style="margin-bottom: 15px;">အသုံးပြုပုံ ဥပမာ</h4>
+                <div style="background: var(--bg); padding: 15px; border-radius: 5px; text-align: left; font-family: monospace; margin-bottom: 20px;">
+                    <div><span style="color: var(--primary);">from</span> myanmar_code <span style="color: var(--primary);">import</span> MyanmarCodeEngine</div>
+                    <div>engine = MyanmarCodeEngine()</div>
+                    <div>engine.execute(<span style="color: #ffaa00;">'ပုံနှိပ် "မင်္ဂလာပါ"'</span>)</div>
+                </div>
+                
+                <a href="https://pypi.org/project/myanmar-code/2.0.0/" target="_blank" class="btn">PyPI မှာကြည့်ရန်</a>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="container">
+            <div style="font-size: 2rem; color: var(--primary); margin-bottom: 20px;">🇲🇲</div>
+            <p>မြန်မာကုဒ် (Myanmar Code) v2.0.0</p>
+            <p style="margin: 10px 0;">Keywords ၁၂၇ လုံးဖြင့် မြန်မာဘာသာစကားကို ကွန်ပျူတာဘာသာစကားအဖြစ်</p>
+            
+            <div class="footer-links">
+                <a href="https://github.com/meonnmi-ops/Myanmar-programming-language-" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+                <a href="https://pypi.org/project/myanmar-code/2.0.0/" target="_blank"><i class="fab fa-python"></i> PyPI</a>
+            </div>
+            
+            <p style="margin-top: 30px; font-size: 0.9rem;">
+                © ၂၀၂၆ မြန်မာကုဒ် - ဖန်တီးသူ: Aung MoeOo (MWD) & DEEPSEEK STANDARD CODER STANDARD V3
+            </p>
+        </div>
+    </footer>
+</body>
+</html>

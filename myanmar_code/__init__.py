@@ -1,8 +1,8 @@
 ```python
 """
-မြန်မာကုဒ် (Myanmar Code) - Complete Programming Language
+မြန်မာကုဒ် (Myanmar Code) v2.0.0
 Keywords: ၁၂၇ လုံး
-Version: 2.0.0
+Myanmar Programming Language Engine
 """
 
 class MyanmarCodeEngine:
@@ -43,23 +43,20 @@ class MyanmarCodeEngine:
     
     def execute(self, code):
         """
-        မြန်မာကုဒ်ကို run ရန်
+        Execute Myanmar Code (simplified version)
         """
-        # မြန်မာဂဏန်းများကို အာရပ်ဂဏန်းအဖြစ်ပြောင်းမယ်
+        # Convert Myanmar digits
         for mm, en in self.digits.items():
             code = code.replace(mm, en)
         
-        # ဒီမှာ မြန်မာကုဒ် interpreter logic ထည့်ရန်
-        # (အခြေခံအနေနဲ့ ပြန်ပေးရုံပဲ)
-        return f"ကုဒ် run ပြီးပါပြီ။ ရလဒ်: {code}"
-    
-    def get_keywords(self):
-        """Keywords စာရင်းပြန်ပေးရန်"""
-        return self.keywords
+        # Simple keyword conversion (just for demo)
+        if 'ပုံနှိပ်' in code:
+            return "မင်္ဂလာပါ"
+        return "ကုဒ် run ပြီးပါပြီ"
     
     def get_version(self):
-        """Version ပြန်ပေးရန်"""
         return "2.0.0"
+    
+    def get_keywords(self):
+        return self.keywords
 ```
-
----

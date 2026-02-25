@@ -12,7 +12,7 @@ setup(
     description="မြန်မာဘာသာစကားဖြင့် ရေးသားနိုင်သော ပရိုဂရမ်းမင်းဘာသာစကား (Keywords ၁၂၇ လုံး)",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/mimoe7897-collab/myanmar-code",
+    url="https://meonnmi-ops.github.io/myanmar-code/web-ide",
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

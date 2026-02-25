@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🇲🇲 မြန်မာကုဒ် Web IDE</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Padauk', sans-serif; }
+        body { background: #0a0c14; color: #e0e0e0; height: 100vh; display: flex; flex-direction: column; }
+        .header { background: #1a1e2a; padding: 15px; border-bottom: 2px solid #00ff9d; }
+        .main { flex: 1; display: flex; padding: 20px; }
+        .editor-panel { flex: 1; background: #1a1e2a; border: 1px solid #00ff9d; border-radius: 8px; display: flex; flex-direction: column; }
+        .toolbar { padding: 10px; border-bottom: 1px solid #00ff9d; display: flex; gap: 10px; }
+        textarea { flex: 1; background: #0a0c14; border: none; color: #e0e0e0; padding: 20px; font-family: monospace; resize: none; outline: none; }
+        .output { background: #0a0c14; border-top: 1px solid #00ff9d; padding: 15px; min-height: 150px; font-family: monospace; }
+        .btn { padding: 8px 16px; background: transparent; border: 1px solid #00ff9d; color: #00ff9d; border-radius: 4px; cursor: pointer; }
+        .btn:hover { background: #00ff9d; color: #0a0c14; }
+        .footer { background: #1a1e2a; padding: 10px; text-align: center; border-top: 1px solid #00ff9d; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2 style="color:#00ff9d;">🇲🇲 မြန်မာကုဒ် Web IDE</h2>
+    </div>
+    <div class="main">
+        <div class="editor-panel">
+            <div class="toolbar">
+                <button class="btn" onclick="runCode()">▶️ Run</button>
+                <button class="btn" onclick="insertHello()">👋 Hello</button>
+                <button class="btn" onclick="clearEditor()">🗑️ Clear</button>
+            </div>
+            <textarea id="editor" placeholder="# မြန်မာကုဒ်ရေးရန်...">ပုံနှိပ် "မင်္ဂလာပါ"</textarea>
+            <div class="output" id="output">Ready...</div>
+        </div>
+    </div>
+    <div class="footer">
+        Keywords: ၁၂၇ လုံး | v2.0.0
+    </div>
+
+    <script>
+        function runCode() {
+            let code = document.getElementById('editor').value;
+            let output = "Output: " + code;
+            document.getElementById('output').innerText = output;
+        }
+        function insertHello() {
+            document.getElementById('editor').value = 'ပုံနှိပ် "မင်္ဂလာပါ"';
+        }
+        function clearEditor() {
+            document.getElementById('editor').value = '';
+        }
+    </script>
+</body>
+</html>

@@ -1,54 +1,883 @@
 <!DOCTYPE html>
-<html lang="my">
+<html lang="my" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🇲🇲 မြန်မာကုဒ် Web IDE</title>
+    <title>MYANOS IDE v2.1 - Myanmar Programming Language</title>
+    <meta name="description" content="Comprehensive Myanmar Custom HTML Tags System - 50+ Tags, 213 Keywords, Full Code Editor">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Padauk', sans-serif; }
-        body { background: #0a0c14; color: #e0e0e0; height: 100vh; display: flex; flex-direction: column; }
-        .header { background: #1a1e2a; padding: 15px; border-bottom: 2px solid #00ff9d; }
-        .main { flex: 1; display: flex; padding: 20px; }
-        .editor-panel { flex: 1; background: #1a1e2a; border: 1px solid #00ff9d; border-radius: 8px; display: flex; flex-direction: column; }
-        .toolbar { padding: 10px; border-bottom: 1px solid #00ff9d; display: flex; gap: 10px; }
-        textarea { flex: 1; background: #0a0c14; border: none; color: #e0e0e0; padding: 20px; font-family: monospace; resize: none; outline: none; }
-        .output { background: #0a0c14; border-top: 1px solid #00ff9d; padding: 15px; min-height: 150px; font-family: monospace; }
-        .btn { padding: 8px 16px; background: transparent; border: 1px solid #00ff9d; color: #00ff9d; border-radius: 4px; cursor: pointer; }
-        .btn:hover { background: #00ff9d; color: #0a0c14; }
-        .footer { background: #1a1e2a; padding: 10px; text-align: center; border-top: 1px solid #00ff9d; }
+        /* ===== CSS Reset & Variables ===== */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        :root {
+            --bg: #0f172a;
+            --fg: #e2e8f0;
+            --card: #1e293b;
+            --card-fg: #e2e8f0;
+            --border: #334155;
+            --muted: #64748b;
+            --accent: #10b981;
+            --accent-glow: rgba(16,185,129,0.15);
+            --gold: #f59e0b;
+            --code-bg: #1e1e2e;
+            --code-fg: #cdd6f4;
+            --success: #22c55e;
+            --error: #ef4444;
+            --radius: 12px;
+        }
+        
+        [data-theme="light"] {
+            --bg: #f8fafc;
+            --fg: #0f172a;
+            --card: #ffffff;
+            --card-fg: #0f172a;
+            --border: #e2e8f0;
+            --muted: #64748b;
+            --accent: #059669;
+            --accent-glow: rgba(5,150,105,0.1);
+            --gold: #d97706;
+            --code-bg: #f1f5f9;
+            --code-fg: #1e293b;
+        }
+        
+        body {
+            font-family: 'Padauk', sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            line-height: 1.8;
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+        }
+        
+        /* ===== Scrollbar ===== */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+        
+        /* ===== Layout ===== */
+        .header {
+            position: sticky; top: 0; z-index: 50;
+            background: var(--bg); border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+            padding: 12px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .logo {
+            width: 36px; height: 36px; border-radius: 10px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; color: white; font-weight: bold;
+            box-shadow: 0 4px 15px rgba(16,185,129,0.3);
+        }
+        .header h1 { font-size: 18px; font-weight: 700; }
+        .header h1 span { color: var(--accent); }
+        .badge {
+            display: inline-flex; align-items: center; padding: 2px 8px;
+            border-radius: 6px; font-size: 11px; font-weight: 600;
+            border: 1px solid var(--border); color: var(--accent);
+        }
+        .status { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+        
+        .theme-btn {
+            width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border);
+            background: transparent; color: var(--fg); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; transition: all 0.2s;
+        }
+        .theme-btn:hover { background: var(--accent-glow); border-color: var(--accent); }
+        
+        /* ===== Hero ===== */
+        .hero {
+            text-align: center; padding: 40px 20px 30px;
+            background: linear-gradient(to bottom, var(--accent-glow), transparent);
+            border-bottom: 1px solid var(--border);
+        }
+        .hero-tag {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 4px 16px; border-radius: 999px;
+            background: var(--accent-glow); border: 1px solid var(--accent);
+            font-size: 12px; font-weight: 600; color: var(--accent);
+            margin-bottom: 16px;
+        }
+        .hero h2 {
+            font-size: clamp(24px, 5vw, 48px); font-weight: 800;
+            line-height: 1.2; margin-bottom: 12px;
+        }
+        .hero h2 .gradient {
+            background: linear-gradient(135deg, #10b981, #f59e0b);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p { color: var(--muted); font-size: 14px; max-width: 600px; margin: 0 auto; }
+        .hero-stats {
+            display: flex; justify-content: center; gap: 24px;
+            margin-top: 20px; flex-wrap: wrap;
+        }
+        .hero-stat { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+        .hero-stat .dot { width: 8px; height: 8px; border-radius: 50%; }
+        
+        /* ===== Tabs ===== */
+        .tabs-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .tabs-nav {
+            display: flex; flex-wrap: wrap; gap: 4px;
+            padding: 4px; border-radius: 12px;
+            background: color-mix(in srgb, var(--border) 50%, transparent);
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            flex: 1; min-width: 100px; padding: 10px 16px;
+            border: none; border-radius: 8px;
+            background: transparent; color: var(--muted);
+            font-family: 'Padauk', sans-serif; font-size: 13px; font-weight: 500;
+            cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .tab-btn:hover { color: var(--fg); background: var(--accent-glow); }
+        .tab-btn.active { background: var(--accent); color: white; box-shadow: 0 4px 12px rgba(16,185,129,0.3); }
+        .tab-content { display: none; animation: fadeIn 0.3s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+        
+        /* ===== Section Headers ===== */
+        .section-header { margin-bottom: 16px; }
+        .section-header h3 {
+            font-size: 18px; font-weight: 700; display: flex;
+            align-items: center; gap: 8px; margin-bottom: 4px;
+        }
+        .section-header p { font-size: 13px; color: var(--muted); }
+        
+        /* ===== Code Editor ===== */
+        .editor-container {
+            border-radius: var(--radius); overflow: hidden;
+            border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+            box-shadow: 0 20px 60px var(--accent-glow);
+        }
+        .editor-titlebar {
+            background: var(--code-bg); border-bottom: 1px solid var(--border);
+            padding: 8px 16px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .editor-dots { display: flex; gap: 6px; }
+        .editor-dots span { width: 12px; height: 12px; border-radius: 50%; }
+        .editor-file {
+            color: var(--accent); font-family: 'JetBrains Mono', monospace;
+            font-size: 13px; cursor: pointer;
+        }
+        .editor-actions { display: flex; gap: 4px; }
+        .editor-btn {
+            padding: 4px 10px; border: none; border-radius: 6px;
+            background: transparent; color: var(--muted); cursor: pointer;
+            font-size: 12px; font-family: 'Padauk', sans-serif;
+            transition: all 0.2s; display: flex; align-items: center; gap: 4px;
+        }
+        .editor-btn:hover { background: rgba(255,255,255,0.1); color: var(--fg); }
+        .editor-btn.run { background: var(--accent); color: white; }
+        .editor-btn.run:hover { background: #059669; }
+        
+        .editor-body { background: var(--code-bg); display: flex; min-height: 300px; }
+        .line-numbers {
+            width: 48px; padding: 12px 8px 12px 0;
+            text-align: right; color: var(--muted);
+            font-family: 'JetBrains Mono', monospace; font-size: 13px;
+            line-height: 1.6; user-select: none;
+            border-right: 1px solid var(--border);
+        }
+        .editor-area { flex: 1; position: relative; }
+        .editor-textarea, .editor-highlight {
+            position: absolute; inset: 0; width: 100%; height: 100%;
+            font-family: 'JetBrains Mono', monospace; font-size: 13px;
+            line-height: 1.6; padding: 12px; white-space: pre-wrap;
+            word-wrap: break-word; tab-size: 4;
+        }
+        .editor-textarea {
+            background: transparent; color: transparent; caret-color: var(--accent);
+            border: none; outline: none; resize: none; z-index: 2;
+        }
+        .editor-highlight {
+            pointer-events: none; z-index: 1; overflow: auto;
+            color: var(--code-fg);
+        }
+        
+        .output-panel {
+            background: color-mix(in srgb, var(--code-bg) 80%, transparent);
+            border-top: 1px solid var(--border);
+        }
+        .output-header {
+            padding: 6px 16px; border-bottom: 1px solid var(--border);
+            font-size: 12px; color: var(--muted);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .output-body {
+            padding: 12px 16px; max-height: 200px; overflow-y: auto;
+            font-family: 'JetBrains Mono', monospace; font-size: 13px;
+        }
+        .output-line { color: var(--success); padding: 2px 0; }
+        .output-line::before { content: '> '; color: var(--muted); }
+        .error-line { color: var(--error); }
+        .error-line::before { content: '✕ '; }
+        .output-placeholder { color: var(--muted); font-style: italic; font-size: 12px; }
+        
+        .editor-statusbar {
+            background: color-mix(in srgb, var(--accent) 20%, transparent);
+            border-top: 1px solid var(--border);
+            padding: 4px 16px; font-size: 11px; color: var(--accent);
+            display: flex; justify-content: space-between;
+        }
+        
+        /* ===== Keyword Legend ===== */
+        .legend {
+            padding: 16px; border-radius: var(--radius);
+            border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+            margin-bottom: 16px;
+        }
+        .legend p { font-size: 12px; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
+        .legend-items { display: flex; flex-wrap: wrap; gap: 8px; }
+        .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
+        .legend-color { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+        
+        /* ===== Tag Cards ===== */
+        .card-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
+        .card {
+            border-radius: var(--radius); overflow: hidden;
+            border: 1px solid var(--border); background: var(--card);
+            transition: all 0.3s;
+        }
+        .card:hover { border-color: color-mix(in srgb, var(--accent) 40%, transparent); box-shadow: 0 8px 30px var(--accent-glow); }
+        .card-header {
+            padding: 12px 16px; background: linear-gradient(135deg, var(--accent-glow), transparent);
+            border-bottom: 1px solid var(--border);
+        }
+        .card-header code {
+            font-family: 'JetBrains Mono', monospace; font-size: 13px;
+            font-weight: 700; color: var(--accent);
+            background: var(--accent-glow); padding: 2px 8px; border-radius: 4px;
+        }
+        .card-header .arrow { color: var(--muted); font-size: 12px; margin: 0 6px; }
+        .card-header .equiv {
+            font-family: 'JetBrains Mono', monospace; font-size: 11px;
+            border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px;
+            color: var(--muted);
+        }
+        .card-title { font-size: 13px; color: var(--muted); margin-top: 6px; }
+        .card-body { padding: 16px; }
+        .card-body .example {
+            padding: 12px; border-radius: 8px;
+            border: 1px solid var(--border); background: color-mix(in srgb, var(--bg) 50%, transparent);
+        }
+        
+        /* ===== Headings ===== */
+        .heading-demo h1 { font-size: 28px; font-weight: 800; margin-bottom: 4px; }
+        .heading-demo h2 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+        .heading-demo h3 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+        .heading-demo h4 { font-size: 17px; font-weight: 500; margin-bottom: 4px; }
+        .heading-demo h5 { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+        .heading-demo h6 { font-size: 13px; font-weight: 500; margin-bottom: 4px; color: var(--muted); }
+        
+        /* ===== Interactive Elements ===== */
+        .btn {
+            padding: 8px 20px; border: none; border-radius: 8px;
+            font-family: 'Padauk', sans-serif; font-size: 13px;
+            cursor: pointer; transition: all 0.2s; font-weight: 600;
+        }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { background: #059669; transform: translateY(-1px); }
+        .btn-outline { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+        .btn-outline:hover { background: var(--accent-glow); }
+        .btn-danger { background: var(--error); color: white; }
+        .btn-gold { background: var(--gold); color: white; }
+        .btn-sm { padding: 6px 14px; font-size: 12px; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        
+        .input-field {
+            width: 100%; padding: 8px 14px; border-radius: 8px;
+            border: 1px solid var(--border); background: var(--bg);
+            color: var(--fg); font-family: 'Padauk', sans-serif; font-size: 13px;
+            outline: none; transition: border-color 0.2s;
+        }
+        .input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+        
+        /* ===== Table ===== */
+        .myan-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .myan-table th {
+            background: var(--accent-glow); color: var(--accent);
+            padding: 10px 14px; text-align: left; font-weight: 600;
+            border-bottom: 2px solid var(--accent); cursor: pointer;
+        }
+        .myan-table th:hover { background: color-mix(in srgb, var(--accent) 20%, transparent); }
+        .myan-table td {
+            padding: 10px 14px; border-bottom: 1px solid var(--border);
+        }
+        .myan-table tr:hover td { background: var(--accent-glow); }
+        .myan-table code {
+            font-family: 'JetBrains Mono', monospace; font-size: 12px;
+            background: var(--accent-glow); color: var(--accent);
+            padding: 2px 6px; border-radius: 4px;
+        }
+        
+        /* ===== Code Display ===== */
+        .output-display {
+            background: color-mix(in srgb, var(--success) 10%, var(--card));
+            border: 1px solid color-mix(in srgb, var(--success) 30%, transparent);
+            border-radius: 8px; padding: 12px;
+            font-family: 'JetBrains Mono', monospace; font-size: 13px;
+        }
+        .output-display .line-success { color: var(--success); }
+        .output-display .line-error {
+            color: var(--error); background: color-mix(in srgb, var(--error) 10%, var(--card));
+            border: 1px solid color-mix(in srgb, var(--error) 30%, transparent);
+            border-radius: 6px; padding: 8px 12px; margin-top: 8px;
+        }
+        .output-display .line-pre {
+            background: var(--code-bg); border-radius: 6px; padding: 12px;
+            border: 1px solid var(--border); font-size: 12px; margin-top: 8px;
+            color: var(--code-fg); overflow-x: auto;
+        }
+        
+        /* ===== Advanced: Collapsible ===== */
+        .details-item { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 8px; }
+        .details-toggle {
+            width: 100%; padding: 12px 16px; border: none;
+            background: transparent; color: var(--fg); cursor: pointer;
+            font-family: 'Padauk', sans-serif; font-size: 13px; font-weight: 500;
+            display: flex; justify-content: space-between; align-items: center;
+            transition: background 0.2s; text-align: left;
+        }
+        .details-toggle:hover { background: var(--accent-glow); }
+        .details-body { padding: 12px 16px; background: color-mix(in srgb, var(--border) 10%, transparent); font-size: 13px; color: var(--muted); display: none; border-top: 1px solid var(--border); }
+        .details-body.open { display: block; }
+        
+        /* ===== Progress ===== */
+        .progress-bar { width: 100%; height: 10px; background: var(--border); border-radius: 5px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #34d399); border-radius: 5px; transition: width 0.5s; }
+        .progress-fill.gold { background: linear-gradient(90deg, var(--gold), #fbbf24); }
+        
+        /* ===== Footer ===== */
+        .footer {
+            border-top: 1px solid var(--border); padding: 20px;
+            margin-top: 40px;
+        }
+        .footer-inner {
+            max-width: 1200px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 16px;
+        }
+        .footer-left { display: flex; align-items: center; gap: 12px; }
+        .footer-logo { width: 24px; height: 24px; border-radius: 6px; background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; font-size: 12px; color: white; }
+        .footer-text p { font-size: 13px; font-weight: 600; }
+        .footer-text span { font-size: 11px; color: var(--muted); }
+        .footer-copy { font-size: 11px; color: var(--muted); }
+        
+        /* ===== Responsive ===== */
+        @media (max-width: 640px) {
+            .card-grid { grid-template-columns: 1fr; }
+            .tab-btn { min-width: 80px; font-size: 11px; }
+            .hero h2 { font-size: 22px; }
+            .header h1 { font-size: 15px; }
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h2 style="color:#00ff9d;">🇲🇲 မြန်မာကုဒ် Web IDE</h2>
-    </div>
-    <div class="main">
-        <div class="editor-panel">
-            <div class="toolbar">
-                <button class="btn" onclick="runCode()">▶️ Run</button>
-                <button class="btn" onclick="insertHello()">👋 Hello</button>
-                <button class="btn" onclick="clearEditor()">🗑️ Clear</button>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">M</div>
+            <h1><span>MYANOS</span> IDE</h1>
+            <span class="badge">v2.1</span>
+            <div class="status">
+                <span class="status-dot"></span>
+                <span style="font-family:monospace">SYSTEM_LOAD: OPTIMAL</span>
             </div>
-            <textarea id="editor" placeholder="# မြန်မာကုဒ်ရေးရန်...">ပုံနှိပ် "မင်္ဂလာပါ"</textarea>
-            <div class="output" id="output">Ready...</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+            <div class="status" style="font-family:monospace">213 keywords</div>
+            <button class="theme-btn" onclick="toggleTheme()" title="Theme">🌙</button>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-tag">⚡ မြန်မာဘာသာစကား ပ္ပန်ဿီ v2.1</div>
+        <h2>မြန်မာ <span class="gradient">Custom HTML Tags</span> စနစ်</h2>
+        <p>မြန်မာဘာသာစကားဖြင့် ရေးသားထားသော ပရော်ဂျဉ် HTML ကုန်ဆက်စုများကို ကြည့်ရှုပါ။ ၅၀+ ကုန်ဆက်စုများ ပါရှိပြီး ပရော်ဂျဉ် ပရို့ပါ။</p>
+        <div class="hero-stats">
+            <div class="hero-stat"><span class="dot" style="background:var(--accent)"></span> ၅၀+ ကုန်ဆက်စုများ</div>
+            <div class="hero-stat"><span class="dot" style="background:var(--gold)"></span> ၂၁၃ ကိစ္စစာလုံး</div>
+            <div class="hero-stat"><span class="dot" style="background:#a78bfa"></span> ပရော်ဂျဉ် ပရို့</div>
+        </div>
+    </section>
+
+    <!-- Main Tabs -->
+    <div class="tabs-container">
+        <nav class="tabs-nav">
+            <button class="tab-btn active" onclick="switchTab('editor')">🖥️ ပ္ပန်ဿီ</button>
+            <button class="tab-btn" onclick="switchTab('structure')">📐 ခန္ဓာ</button>
+            <button class="tab-btn" onclick="switchTab('text')">📝 စာသား</button>
+            <button class="tab-btn" onclick="switchTab('interactive')">🔘 ခလုတ်</button>
+            <button class="tab-btn" onclick="switchTab('media')">🖼️ ပုံ</button>
+            <button class="tab-btn" onclick="switchTab('table')">📊 ကတ်</button>
+            <button class="tab-btn" onclick="switchTab('code')">💻 ကုဒ်ပုံ</button>
+            <button class="tab-btn" onclick="switchTab('advanced')">✨ တကယ်ကျွန်ုပ်</button>
+        </nav>
+
+        <!-- Tab 1: Code Editor -->
+        <div id="tab-editor" class="tab-content active">
+            <div class="section-header">
+                <h3>🖥️ &lt;myan&gt; ပ္ပန်ဿီ ကုဒ် ဓာတ်ပုံ</h3>
+                <p>မြန်မာဘာသာစကားဖြင့် ကုဒ် ရေးသားရန် ပရော်ဂျဉ် ကုဒ် ဓာတ်ပုံ - .myan ဖိုင်များကို ပြဿနာ ပုံမှန်ဖြင့် ဖွင့်ဆိုင်းပါ</p>
+            </div>
+            <div class="legend">
+                <p>ကိစ္စစာလုံး အရောင် ပွဲမှတ်ပုံ / Keyword Color Legend</p>
+                <div class="legend-items">
+                    <div class="legend-item"><span class="legend-color" style="background:#56b6c2"></span>Control Flow</div>
+                    <div class="legend-item"><span class="legend-color" style="background:#c678dd"></span>Functions</div>
+                    <div class="legend-item"><span class="legend-color" style="background:#98c379"></span>Built-ins</div>
+                    <div class="legend-item"><span class="legend-color" style="background:#d19a66"></span>Booleans</div>
+                    <div class="legend-item"><span class="legend-color" style="background:#e06c75"></span>Operators</div>
+                    <div class="legend-item"><span class="legend-color" style="background:#4ec9b0"></span>Types</div>
+                    <div class="legend-item"><span class="legend-color" style="background:#e5c07b"></span>Errors</div>
+                    <div class="legend-item"><span class="legend-color" style="background:#e494bb"></span>Import</div>
+                    <div class="legend-item"><span class="legend-color" style="background:#61afef"></span>Async</div>
+                    <div class="legend-item"><span class="legend-color" style="background:#a5d6a7"></span>Strings</div>
+                    <div class="legend-item"><span class="legend-color" style="background:#636d83"></span>Comments</div>
+                    <div class="legend-item"><span class="legend-color" style="background:#d19a66"></span>Numbers</div>
+                </div>
+            </div>
+            <div class="editor-container">
+                <div class="editor-titlebar">
+                    <div class="editor-dots">
+                        <span style="background:#ef4444"></span>
+                        <span style="background:#eab308"></span>
+                        <span style="background:#22c55e"></span>
+                    </div>
+                    <span class="editor-file">untitled.myan</span>
+                    <div class="editor-actions">
+                        <button class="editor-btn" onclick="newFile()">📄 New</button>
+                        <button class="editor-btn" onclick="copyCode()">📋 Copy</button>
+                        <button class="editor-btn" onclick="clearEditor()">🗑️ Clear</button>
+                        <button class="editor-btn run" onclick="runCode()">▶ ပုံနှိပ်</button>
+                    </div>
+                </div>
+                <div class="editor-body">
+                    <div class="line-numbers" id="lineNumbers"></div>
+                    <div class="editor-area">
+                        <textarea class="editor-textarea" id="editor" spellcheck="false" oninput="updateEditor()" onscroll="syncScroll()" onkeydown="handleTab(event)"></textarea>
+                        <pre class="editor-highlight" id="highlight"></pre>
+                    </div>
+                </div>
+                <div class="output-panel">
+                    <div class="output-header">
+                        <span>📤 ရလဒ်</span>
+                        <button class="editor-btn" onclick="clearOutput()" style="padding:2px 6px">✕</button>
+                    </div>
+                    <div class="output-body" id="output">
+                        <p class="output-placeholder">"ပုံနှိပ်" ခလုတ်ကို နှိပ်ပါ...</p>
+                    </div>
+                </div>
+                <div class="editor-statusbar">
+                    <span>Myanmar Programming Language | .myan | UTF-8</span>
+                    <span>flex: 1</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Structure Tags -->
+        <div id="tab-structure" class="tab-content">
+            <div class="section-header">
+                <h3>📐 ခန္ဓာ အုပ်စု / Structure Tags</h3>
+                <p>HTML ဖောက်မြူများ၏ အခြေခံ အုပ်စု ကုန်ဆက်စုများ</p>
+            </div>
+            <div class="card-grid">
+                <div class="card"><div class="card-header"><code>&lt;စတိုင်&gt;</code><span class="arrow">→</span><span class="equiv">&lt;div&gt;</span><div class="card-title">များလုံးသို့ အခြေခံ ကုန်ဆက်စု - Base container</div></div><div class="card-body"><div class="example"><div style="background:var(--accent-glow);border:1px solid var(--accent);border-radius:8px;padding:10px;margin-bottom:8px"><p style="font-size:13px;color:var(--accent)">စတိုင် - Container Box</p></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px"><div style="background:var(--accent-glow);border-radius:6px;padding:6px;text-align:center;font-size:12px">၁</div><div style="background:var(--accent-glow);border-radius:6px;padding:6px;text-align:center;font-size:12px">၂</div><div style="background:var(--accent-glow);border-radius:6px;padding:6px;text-align:center;font-size:12px">၃</div></div></div></div></div>
+                <div class="card"><div class="card-header"><code>&lt;ကုဒ်&gt;</code><span class="arrow">→</span><span class="equiv">&lt;span&gt;</span><div class="card-title">အကွက်လိုက် ကုန်ဆက်စု - Inline container</div></div><div class="card-body"><div class="example"><p style="font-size:13px">ဒီစာထဲမှာ <span style="color:var(--accent);font-weight:700;background:var(--accent-glow);padding:1px 4px;border-radius:3px">ကုဒ်</span> ကုန်ဆက်စုဖြင့် <span style="color:var(--gold);font-weight:700;background:rgba(245,158,11,0.1);padding:1px 4px;border-radius:3px">အရောင်ပြောင်း</span> လုပ်နိုင်ပါသည်</p></div></div></div>
+                <div class="card"><div class="card-header"><code>&lt;အပိုင်း&gt;</code><span class="arrow">→</span><span class="equiv">&lt;section&gt;</span><div class="card-title">အပိုင်း - Document section</div></div><div class="card-body"><div class="example"><h4 style="font-size:14px;color:var(--accent);margin-bottom:4px">အပိုင်း ၁</h4><p style="font-size:13px;color:var(--muted)">ဒီ အပိုင်းတွင် အချက်အလက်များ ပါရှိပါသည်။</p></div></div></div>
+                <div class="card"><div class="card-header"><code>&lt;ခြေတန်း&gt;</code><span class="arrow">→</span><span class="equiv">&lt;article&gt;</span><div class="card-title">ခေတန်းစာ - Self-contained article</div></div><div class="card-body"><div class="example"><h4 style="font-size:14px;margin-bottom:4px">မြန်မာဘာသာစကား ပ္ပန်ဿီ</h4><p style="font-size:13px;color:var(--muted)">မြန်မာဘာသာစကားဖြင့် ကုဒ်ရေးသားနိုင်သော ပ္ပန်ဿီ ဖြစ်ပါသည်။</p></div></div></div>
+                <div class="card"><div class="card-header"><code>&lt;ဘားတန်း&gt;</code><span class="arrow">→</span><span class="equiv">&lt;nav&gt;</span><div class="card-title">သွားလမ်းပြသရန် - Navigation</div></div><div class="card-body"><div class="example"><nav style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-outline btn-sm">မဟာမောကွန်း</button><button class="btn btn-outline btn-sm">ကုဒ်စာရင်း</button><button class="btn btn-outline btn-sm">ကိုယ်ရည်</button></nav></div></div></div>
+                <div class="card"><div class="card-header"><code>&lt;ဘေးတန်း&gt;</code><span class="arrow">→</span><span class="equiv">&lt;aside&gt;</span><div class="card-title">ဘေးချင်း - Sidebar content</div></div><div class="card-body"><div class="example" style="display:flex;gap:10px"><aside style="width:100px;background:var(--accent-glow);border-radius:8px;padding:10px;border:1px solid var(--accent)"><p style="font-size:12px;font-weight:700;color:var(--accent)">ဘေးတန်း</p><ul style="font-size:11px;color:var(--muted);padding-left:16px"><li>ခေါင်းစဉ်</li><li>အသေးစုံ</li><li>ဆက်သွယ်ရန်</li></ul></aside><div style="flex:1;background:color-mix(in srgb,var(--border) 30%,transparent);border-radius:8px;padding:10px;font-size:11px;color:var(--muted)">အဓိက အကြောင်းအရာ</div></div></div></div>
+                <div class="card"><div class="card-header"><code>&lt;ပေါ်ဆုံ&gt;</code><span class="arrow">→</span><span class="equiv">&lt;header&gt;</span><div class="card-title">စာမေးပွဲ ပေါ်ဆုံ - Page header</div></div><div class="card-body"><div class="example"><div style="background:linear-gradient(135deg,var(--accent),#059669);border-radius:8px;padding:14px;color:white"><p style="font-weight:700">MYANOS IDE</p><p style="font-size:12px;opacity:0.8">မြန်မာဘာသာစကား ပ္ပန်ဿီ</p></div></div></div></div>
+                <div class="card"><div class="card-header"><code>&lt;ခရီးသွား&gt;</code><span class="arrow">→</span><span class="equiv">&lt;footer&gt;</span><div class="card-title">အပေါ်ဆုံ အဆုံးပိုင်း - Page footer</div></div><div class="card-body"><div class="example" style="background:var(--border);border-radius:8px;padding:12px;display:flex;justify-content:space-between"><p style="font-size:12px;color:var(--muted)">© ၂၀၂၄ MYANOS IDE</p><p style="font-size:12px;color:var(--muted)">v2.1</p></div></div></div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Text Tags -->
+        <div id="tab-text" class="tab-content">
+            <div class="section-header"><h3>📝 စာသား အုပ်စု / Text Tags</h3></div>
+            <div class="card" style="margin-bottom:16px"><div class="card-body"><div class="heading-demo example"><h1>ခေါင်း၁ - ခေါင်းစဉ်ကြီးဆုံး</h1><h2>ခေါင်း၂ - ခေါင်းစဉ်ဒုတိယ</h2><h3>ခေါင်း၃ - ခေါင်းစဉ်တတိယ</h3><h4>ခေါင်း၄ - ခေါင်းစဉ်စတတိယ</h4><h5>ခေါင်း၅ - ခေါင်းစဉ်ခြမ်းကြီး</h5><h6>ခေါင်း၆ - ခေါင်းစဉ်အသေးစုံ</h6></div></div></div>
+            <div class="card-grid">
+                <div class="card"><div class="card-header"><code>&lt;စာပိုဒ်&gt;</code><span class="arrow">→</span><span class="equiv">&lt;p&gt;</span></div><div class="card-body"><div class="example"><p style="font-size:13px">မြန်မာဘာသာစကားသည် မြန်မာနိုင်ငံ၏ ရေးကြီးသော ဘာသာစကား ဖြစ်သည်။ ယခုအချိန်ထိုင် အသုံးပြုကြသော ဘာသာစကား ဖြစ်ပါသည်။</p></div></div></div>
+                <div class="card"><div class="card-header"><code>&lt;စာကြောင်း&gt;</code><span class="arrow">→</span><span class="equiv">&lt;strong&gt;</span></div><div class="card-body"><div class="example"><p style="font-size:13px">ဒီ စာကို <strong style="color:var(--accent)">စာကြောင်း</strong> ဖြင့် ချဲ့ထွင်းထားပါသည်။</p></div></div></div>
+                <div class="card"><div class="card-header"><code>&lt;အကြောင်းပြုပြင်&gt;</code><span class="arrow">→</span><span class="equiv">&lt;em&gt;</span></div><div class="card-body"><div class="example"><p style="font-size:13px">ဒီ စာကို <em style="color:var(--gold)">အကြောင်းပြုပြင်</em> ဖြင့် ဖော်ပြထားပါသည်။</p></div></div></div>
+                <div class="card"><div class="card-header"><code>&lt;စာရင်း&gt;</code><span class="arrow">→</span><span class="equiv">&lt;a&gt;</span></div><div class="card-body"><div class="example"><a style="color:var(--accent);font-size:13px;text-decoration:none;border-bottom:1px dashed var(--accent)">🔗 MYANOS IDE မဟာမောကွန်း</a></div></div></div>
+                <div class="card"><div class="card-header"><code>&lt;နံပါတ်စာရင်း&gt;</code><span class="arrow">→</span><span class="equiv">&lt;ol&gt;</span></div><div class="card-body"><div class="example"><ol style="font-size:13px;padding-left:20px"><li>မြန်မာဘာသာစကား လေ့လာရန်</li><li>ပ္ပန်ဿီ တစ်ခု ရွေးချယ်ရန်</li><li>ကုဒ် ရေးသားရန်</li></ol></div></div></div>
+                <div class="card"><div class="card-header"><code>&lt;ထပ်လုံးချင်း&gt;</code><span class="arrow">→</span><span class="equiv">&lt;blockquote&gt;</span></div><div class="card-body"><div class="example" style="border-left:4px solid var(--accent);padding-left:14px;font-style:italic;font-size:13px;color:var(--muted)">"ဘာသာစကား ဆုံးဖြတ်ခြင်းသည် လူမှုအဖွဲ့၏ အရေးအကြီးဆုံး အတွေ့အကြုံ ဖြစ်သည်။"</div></div></div>
+            </div>
+        </div>
+
+        <!-- Tab 4: Interactive Tags -->
+        <div id="tab-interactive" class="tab-content">
+            <div class="section-header"><h3>🔘 ခလုတ် အုပ်စု / Interactive Tags</h3></div>
+            <div class="card-grid">
+                <div class="card"><div class="card-header"><code>&lt;ခလုတ်&gt;</code><span class="arrow">→</span><span class="equiv">&lt;button&gt;</span></div><div class="card-body"><div class="example" style="display:flex;flex-direction:column;gap:8px"><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-primary btn-sm">ပုံမှန်</button><button class="btn btn-outline btn-sm">အုပ်စုလုံး</button><button class="btn btn-gold btn-sm">အရောင်ရောင်</button><button class="btn btn-danger btn-sm">ဖျက်ရန်</button></div><div style="display:flex;align-items:center;gap:12px"><button class="btn btn-outline btn-sm" onclick="this.nextElementSibling.textContent=Math.max(0,+this.nextElementSibling.textContent-1)">− နှုတ်</button><span id="counter" style="font-size:18px;font-weight:800;color:var(--accent);min-width:24px;text-align:center">0</span><button class="btn btn-primary btn-sm" onclick="this.previousElementSibling.textContent=+this.previousElementSibling.textContent+1">+ ပေါင်း</button></div></div></div></div>
+                <div class="card"><div class="card-header"><code>&lt;ထည့်သွင်း&gt;</code><span class="arrow">→</span><span class="equiv">&lt;input&gt;</span></div><div class="card-body"><div class="example" style="display:flex;flex-direction:column;gap:8px"><label style="font-size:12px;color:var(--muted)">စာသား ထည့်သွင်းပါ:</label><input class="input-field" placeholder="မြန်မာစာ ရေးပါ..." oninput="this.parentElement.querySelector('.char-count').textContent=this.value.length+' စာလုံး'"><span class="char-count" style="font-size:12px;color:var(--accent)">0 စာလုံး</span></div></div></div>
+                <div class="card"><div class="card-header"><code>&lt;ရွေးချယ်&gt;</code><span class="arrow">→</span><span class="equiv">&lt;select&gt;</span></div><div class="card-body"><div class="example"><select class="input-field" style="cursor:pointer"><option value="">ဘာသာစကား ရွေးချယ်ပါ...</option><option value="myanmar">မြန်မာ</option><option value="english">အင်္ဂလိပ်</option><option value="japanese">ဂျပန်</option><option value="chinese">တရုတ်</option></select></div></div></div>
+                <div class="card"><div class="card-header"><code>&lt;ဖောင်&gt;</code><span class="arrow">→</span><span class="equiv">&lt;form&gt;</span></div><div class="card-body"><div class="example"><form onsubmit="event.preventDefault();this.querySelector('.form-msg').style.display='block';setTimeout(()=>this.querySelector('.form-msg').style.display='none',3000)"><div style="display:flex;flex-direction:column;gap:8px"><label style="font-size:12px;color:var(--muted)">အမည်</label><input class="input-field" placeholder="သင့်အမည်..." required><label style="font-size:12px;color:var(--muted)">အီးမေးလ်</label><input class="input-field" type="email" placeholder="email@example.com" required><button class="btn btn-primary" type="submit">📤 ပို့ရန်</button><div class="form-msg" style="display:none;padding:8px;background:var(--accent-glow);border-radius:6px;font-size:12px;color:var(--accent)">✅ အောင်မြင်ပါသည်!</div></div></form></div></div></div>
+            </div>
+        </div>
+
+        <!-- Tab 5: Media Tags -->
+        <div id="tab-media" class="tab-content">
+            <div class="section-header"><h3>🖼️ ပုံ အုပ်စု / Media Tags</h3></div>
+            <div class="card-grid">
+                <div class="card"><div class="card-header"><code>&lt;ပုံ&gt;</code><span class="arrow">→</span><span class="equiv">&lt;img&gt;</span></div><div class="card-body"><div class="example" style="text-align:center"><div style="width:100%;height:120px;background:linear-gradient(135deg,var(--accent-glow),rgba(245,158,11,0.1));border-radius:8px;display:flex;align-items:center;justify-content:center;border:1px dashed var(--accent)"><span style="font-size:13px;color:var(--muted)">🖼️ ပုံ ပြသရန် (Image)</span></div></div></div></div>
+                <div class="card"><div class="card-header"><code>&lt;ဗီဒီယို&gt;</code><span class="arrow">→</span><span class="equiv">&lt;video&gt;</span></div><div class="card-body"><div class="example" style="text-align:center"><div style="width:100%;height:120px;background:linear-gradient(135deg,rgba(239,68,68,0.1),rgba(245,158,11,0.1));border-radius:8px;display:flex;align-items:center;justify-content:center;border:1px dashed var(--error)"><span style="font-size:13px;color:var(--muted)">🎬 ဗီဒီယို ပြသရန် (Video)</span></div></div></div></div>
+                <div class="card"><div class="card-header"><code>&lt;အသံ&gt;</code><span class="arrow">→</span><span class="equiv">&lt;audio&gt;</span></div><div class="card-body"><div class="example" style="text-align:center"><div style="width:100%;height:80px;background:linear-gradient(135deg,rgba(139,92,246,0.1),rgba(59,130,246,0.1));border-radius:8px;display:flex;align-items:center;justify-content:center;border:1px dashed #8b5cf6"><span style="font-size:13px;color:var(--muted)">🔊 အသံ ဖွင့်ရန် (Audio)</span></div></div></div></div>
+            </div>
+        </div>
+
+        <!-- Tab 6: Table Tags -->
+        <div id="tab-table" class="tab-content">
+            <div class="section-header"><h3>📊 ကတ် အုပ်စု / Table Tags</h3></div>
+            <div class="card"><div class="card-header"><code>&lt;ကတ်&gt;</code><span class="arrow">→</span><span class="equiv">&lt;table&gt;</span><div class="card-title">ကတ် - Interactive data table with Myanmar content</div></div><div class="card-body"><div class="example" style="overflow-x:auto"><table class="myan-table"><thead><tr><th>&lt;ကတ်ခေါင်း&gt; ကိစ္စ</th><th>အမျိုးအစား</th><th>အဆင့်</th><th>အခြေအနေ</th></tr></thead><tbody><tr><td><code>အကယ်၍</code></td><td>Control Flow</td><td>အခြေခံ</td><td style="color:var(--success)">✓</td></tr><tr><td><code>အဓိပ္ပာယ်</code></td><td>Function</td><td>အခြေခံ</td><td style="color:var(--success)">✓</td></tr><tr><td><code>ပုံနှိပ်</code></td><td>Built-in</td><td>အခြေခံ</td><td style="color:var(--success)">✓</td></tr><tr><td><code>ကြိုးစား</code></td><td>Error</td><td>အလေ့အကျင့်</td><td style="color:var(--success)">✓</td></tr><tr><td><code>မှန်</code></td><td>Boolean</td><td>အခြေခံ</td><td style="color:var(--success)">✓</td></tr><tr><td><code>တင်သွင်း</code></td><td>Import</td><td>အလေ့အကျင့်</td><td style="color:var(--success)">✓</td></tr></tbody></table></div></div></div>
+        </div>
+
+        <!-- Tab 7: Code Display -->
+        <div id="tab-code" class="tab-content">
+            <div class="section-header"><h3>💻 ကုဒ် ပုံပြုရန် / Code Display Tags</h3></div>
+            <div class="card-grid">
+                <div class="card"><div class="card-header"><code>&lt;မြန်ကုဒ်&gt;</code><span class="arrow">→</span><span class="equiv">&lt;code&gt;</span></div><div class="card-body"><div class="example"><p style="font-size:13px">မြန်မာကုဒ碁 ရေးရန်အတွက် <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-size:12px;color:var(--accent)">ပုံနှိပ်("မင်္ဂလာပါ")</code> ကို အသုံးပြုပါ။</p></div></div></div>
+                <div class="card"><div class="card-header"><code>&lt;ရလဒ်&gt;</code><div class="card-title">ရလဒ် - Output display (green theme)</div></div><div class="card-body"><div class="output-display"><div class="line-success">$ မင်္ဂလာပါ_ပုံနှိပ်()</div><div class="line-success">→ မြန်မာဘာသာ ကုဒ碁အသစ်</div><div class="line-success">→ Myanmar Programming Language</div><div style="font-size:11px;color:var(--success);margin-top:6px">✓ အောင်မြင်ပါသည်</div></div></div></div>
+                <div class="card"><div class="card-header"><code>&lt;အမှား&gt;</code><div class="card-title">အမှား - Error display (red theme)</div></div><div class="card-body"><div class="output-display"><div class="line-error">✕ အမှား: ကတ် ၂၀ တွင် SyntaxError</div><div style="font-size:11px;color:var(--error);opacity:0.7;margin-top:4px">  ပုံနှိပ်("မင်္ဂလာပါ"</div></div></div></div>
+                <div class="card"><div class="card-header"><code>&lt;စမ်းသပ်&gt;</code><span class="arrow">→</span><span class="equiv">&lt;pre&gt;</span></div><div class="card-body"><div class="output-display"><div class="line-pre"># မြန်မာ ပ္ပန်ဿီ ဥပမာ
+<span style="color:#c678dd">အဓိပ္ပာယ်</span> <span style="color:#e5c07b">မင်္ဂလာပါ</span>():
+    <span style="color:#98c379">ပုံနှိပ်</span>(<span style="color:#a5d6a7">"နေ့ခဲ့တဲ့ ကြိမး"</span>)
+
+<span style="color:#56b6c2">အကယ်၍</span> <span style="color:var(--fg)">အရမ်း</span> > 5:
+    <span style="color:#98c379">ပုံနှိပ်</span>(<span style="color:#a5d6a7">"ကြီးပါ"</span>)</div></div></div></div>
+            </div>
+        </div>
+
+        <!-- Tab 8: Advanced Tags -->
+        <div id="tab-advanced" class="tab-content">
+            <div class="section-header"><h3>✨ တကယ်ကျွန်ုပ် အုပ်စု / Advanced Tags</h3></div>
+            <div class="card-grid">
+                <div class="card"><div class="card-header"><code>&lt;ပေါ့ပ်&gt;</code><span class="arrow">→</span><span class="equiv">&lt;details/summary&gt;</span><div class="card-title">ပေါ့ပ် - Collapsible details</div></div><div class="card-body"><div class="example"><div class="details-item"><button class="details-toggle" onclick="this.nextElementSibling.classList.toggle('open')">MYANOS IDE ဆိုတာဘယ်လို? <span>▼</span></button><div class="details-body">MYANOS IDE သည် မြန်မာဘာသာစကားဖြင့် ကုဒ碁 ရေးသားနိုင်သော ပ္ပန်ဿီ ဖြစ်ပါသည်။ 213 ကိစ္စစာလုံးများ ပါရှိပြီး စနစ်တိုင်း အသုံးပြုနိုင်ပါသည်။</div></div><div class="details-item"><button class="details-toggle" onclick="this.nextElementSibling.classList.toggle('open')">.myan ဖိုင်ဆိုတာဘယ်လို? <span>▼</span></button><div class="details-body">.myan ဖိုင်သည် မြန်မာဘာသာစကား ပ္ပန်ဿီ၏ ကုဒ碁 ဖိုင် ဖြစ်ပါသည်။ တိုက်ရိုက် ပုံနှိပ်နိုင်ပြီး ရလဒ်များကို တွေ့မြင်နိုင်ပါသည်။</div></div><div class="details-item"><button class="details-toggle" onclick="this.nextElementSibling.classList.toggle('open')">ဘာသာစကား ဘယ်မျိုး ပါသလဲ? <span>▼</span></button><div class="details-body">မြန်မာဘာသာစကား ပရော်ဂျဉ် ပါရှိပါသည်။ စာသား၊ အမျိုးအစား၊ လုပ်ဆောင်ချက်၊ အဓိပ္ပာယ် စသည့် အုပ်စုများ ပါရှိပါသည်။</div></div></div></div></div>
+                <div class="card"><div class="card-header"><code>&lt;တိုးတက်မှု&gt;</code><span class="arrow">→</span><span class="equiv">&lt;progress&gt;</span><div class="card-title">တိုးတက်မှု - Progress bar</div></div><div class="card-body"><div class="example" style="display:flex;flex-direction:column;gap:12px"><div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px"><span>ကုဒ碁 ရေးသားမှု</span><span style="color:var(--accent);font-weight:700">65%</span></div><div class="progress-bar"><div class="progress-fill" style="width:65%"></div></div></div><div style="display:flex;gap:4px"><button class="btn btn-sm btn-outline" onclick="this.parentElement.previousElementSibling.querySelector('.progress-fill').style.width='0%';this.parentElement.previousElementSibling.querySelector('span:last-child').textContent='0%'">0%</button><button class="btn btn-sm btn-outline" onclick="this.parentElement.previousElementSibling.querySelector('.progress-fill').style.width='50%';this.parentElement.previousElementSibling.querySelector('span:last-child').textContent='50%'">50%</button><button class="btn btn-sm btn-primary" onclick="this.parentElement.previousElementSibling.querySelector('.progress-fill').style.width='100%';this.parentElement.previousElementSibling.querySelector('span:last-child').textContent='100%'">100%</button></div></div></div></div>
+                <div class="card"><div class="card-header"><code>&lt;ထုတ်ယူခြင်း&gt;</code><span class="arrow">→</span><span class="equiv">&lt;dialog&gt;</span><div class="card-title">ထုတ်ယူခြင်း - Modal dialog</div></div><div class="card-body"><div class="example"><button class="btn btn-primary" onclick="document.getElementById('demoDialog').showModal()">💬 ထုတ်ယူခြင်း ဖွင့်ရန်</button></div></div></div>
+            </div>
         </div>
     </div>
-    <div class="footer">
-        Keywords: ၁၂၇ လုံး | v2.0.0
-    </div>
+
+    <!-- Dialog -->
+    <dialog id="demoDialog" style="border:1px solid var(--border);border-radius:var(--radius);background:var(--card);color:var(--fg);padding:24px;max-width:400px;width:90%;font-family:'Padauk',sans-serif">
+        <h3 style="font-size:16px;color:var(--accent);margin-bottom:12px">MYANOS IDE v2.1</h3>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px">မြန်မာဘာသာစကား ပ္ပန်ဿီ၏ အသစ်ဆုံးဗဟုသုတ ဖော်ပြခြင်း ဖြစ်ပါသည်။</p>
+        <div style="background:var(--accent-glow);border-radius:8px;padding:12px;margin-bottom:16px">
+            <ul style="font-size:13px;color:var(--fg);padding-left:16px;list-style:none;display:flex;flex-direction:column;gap:6px">
+                <li>✅ ၅၀+ မြန်မာ ကုန်ဆက်စုများ</li>
+                <li>✅ ပ္ပန်ဿီ ဆန်ကုန် ပုံမှန်</li>
+                <li>✅ ၂၁၃ ကိစ္စစာလုံး Syntax Highlighting</li>
+            </ul>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px">
+            <button class="btn btn-outline" onclick="this.closest('dialog').close()">ပိတ်ရန်</button>
+            <button class="btn btn-primary" onclick="this.closest('dialog').close()">အောင်မြင်ပါသည်</button>
+        </div>
+    </dialog>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-left">
+                <div class="footer-logo">M</div>
+                <div class="footer-text"><p>MYANOS IDE v2.1</p><span>မြန်မာဘာသာစကား ပ္ပန်ဿီ</span></div>
+            </div>
+            <p class="footer-copy">© ၂၀၂၆ MYANOS IDE — မြန်မာဘာသာစကားဖြင့် ထုတ်လုပ်ထားသည်</p>
+        </div>
+    </footer>
 
     <script>
-        function runCode() {
-            let code = document.getElementById('editor').value;
-            let output = "Output: " + code;
-            document.getElementById('output').innerText = output;
+    // ===== Theme Toggle =====
+    function toggleTheme() {
+        const html = document.documentElement;
+        const btn = document.querySelector('.theme-btn');
+        if (html.classList.contains('dark')) {
+            html.classList.remove('dark');
+            html.setAttribute('data-theme', 'light');
+            btn.textContent = '☀️';
+        } else {
+            html.classList.add('dark');
+            html.removeAttribute('data-theme');
+            btn.textContent = '🌙';
         }
-        function insertHello() {
-            document.getElementById('editor').value = 'ပုံနှိပ် "မင်္ဂလာပါ"';
+    }
+
+    // ===== Tab Switching =====
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    // ===== Code Editor =====
+    const defaultCode = `# မြန်မာဘာသာစကား ပ္ပန်ဿီ ဥပမာ
+# Myanmar Programming Language Example
+
+အဓိပ္ပာယ် မင်္ဂလာပါ_ပုံနှိပ်():
+    ပုံနှိပ်("မြန်မာဘာသာ ကုဒ်အသစ်")
+    ပုံနှိပ်("Myanmar Programming Language")
+    ပြန်ပေး "အောင်မြင်ပါသည်"
+
+မင်္ဂလာပါ_ပုံနှိပ်()
+
+# အကယ်၍ / if
+အတည် အရမ်း = ၁၀
+အကယ်၍ အရမ်း > ၅:
+    ပုံနှိပ်("အရမ်းက ၅ ထက်ကြီးပါ")
+
+# အတွက် / for
+အတွက် နှစ် in ပတ်လမ်း(၅):
+    ပုံနှိပ်(နှစ်)
+
+# လုပ်နေစဉ် / while
+အတည် ကြိမ် = ၀
+လုပ်နေစဉ် ကြိမ် < ၃:
+    ပုံနှိပ်("ကြိမ် - " + ကြိမ်)
+    ကြိမ် = ကြိမ် + ၁
+
+# စာရင်း / list
+အတည် နာမည်စာရင်း = ["မင်္ဂလာ", "အောင်မင်း", "ချိုခင်း"]
+အတွက် နာမည် in နာမည်စာရင်း:
+    ပုံနှိပ်(နာမည်)
+
+# ကြိုးစား / try
+ကြိုးစား:
+    ရလဒ် = ၁၀ မြှောက်ပါ ၀
+    ပုံနှိပ်(ရလဒ်)
+ဖမ်းမိ အမှား:
+    ပုံနှိပ်("အမှားဖြစ်ပါသည်")
+နောက်ဆုံး:
+    ပုံနှိပ်("ဆက်လုပ်ပါသည်")`;
+
+    const editor = document.getElementById('editor');
+    const highlight = document.getElementById('highlight');
+    const lineNumbers = document.getElementById('lineNumbers');
+
+    editor.value = defaultCode;
+    updateEditor();
+
+    // Myanmar keyword color map
+    const keywordColors = {
+        controlFlow: { color: '#56b6c2', words: ['အကယ်၍', 'မဟုတ်ပါက', 'မဟုတ်လျှင်', 'သို့မဟုတ်', 'ရွေးချယ်', 'အတွက်', 'အကြိမ်အားလုံးအတွက်', 'လုပ်နေစဉ်', 'ရပ်', 'ဆက်လုပ်'] },
+        functions: { color: '#c678dd', words: ['အဓိပ္ပာယ်', 'အတန်း', 'ပြန်ပေး', 'ပြန်ပို့', 'အတိုချုံး', 'လုပ်ဆောင်ချက်', 'ထုတ်ပေး'] },
+        builtins: { color: '#98c379', words: ['ပုံနှိပ်', 'မေးမြန်း', 'အရှည်', 'ရှာ', 'ဖွင့်', 'ဖတ်မည်', 'စာလုံးကြီး', 'စာလုံးသေး', 'စမြည့်', 'ဆုံးမြည့်', 'ပတ်လမ်း'] },
+        booleans: { color: '#d19a66', words: ['မှန်', 'မှား', 'ဘာမှမရှိ', 'ဗလာ'] },
+        operators: { color: '#e06c75', words: ['ပေါင်း', 'နှုတ်', 'မြှောက်', 'စား', 'အကြွင်း', 'ပေါင်းပါ', 'နှုတ်ပါ', 'မြှောက်ပါ', 'စားပါ'] },
+        types: { color: '#4ec9b0', words: ['စာသား', 'စာရင်း', 'အရာဝတ္ထု', 'အဘိဓာန်', 'ကျပန်း', 'အချိန်', 'လော့ဂရစ်သမ်'] },
+        errorHandling: { color: '#e5c07b', words: ['ကြိုးစား', 'ဖမ်းမိ', 'နောက်ဆုံး', 'ချမြှောက်', 'ပစ်ချ', 'စစ်ဆေး'] },
+        imports: { color: '#e494bb', words: ['တင်သွင်း', 'မှ', 'အဖြစ်'] },
+        async: { color: '#61afef', words: ['မတူညီ', 'မျှော်', 'ကိုက်ညီ'] },
+    };
+
+    function highlightCode(code) {
+        let result = '';
+        let i = 0;
+
+        while (i < code.length) {
+            // Comments
+            if (code[i] === '#') {
+                result += '<span style="color:#636d83;font-style:italic">' + escapeHtml(code.slice(i)) + '</span>';
+                break;
+            }
+
+            // Strings
+            if (code[i] === '"' || code[i] === "'") {
+                const quote = code[i];
+                let j = i + 1;
+                while (j < code.length && code[j] !== quote) {
+                    if (code[j] === '\\') j++;
+                    j++;
+                }
+                j = Math.min(j + 1, code.length);
+                result += '<span style="color:#a5d6a7">' + escapeHtml(code.slice(i, j)) + '</span>';
+                i = j;
+                continue;
+            }
+
+            // Numbers
+            if (/[\d၀-၉]/.test(code[i])) {
+                let j = i;
+                while (j < code.length && /[\d၀-९.]/.test(code[j])) j++;
+                result += '<span style="color:#d19a66">' + escapeHtml(code.slice(i, j)) + '</span>';
+                i = j;
+                continue;
+            }
+
+            // Keywords (try longest match)
+            let matched = false;
+            for (const [_, cat] of Object.entries(keywordColors)) {
+                for (const kw of cat.words) {
+                    if (code.slice(i, i + kw.length) === kw) {
+                        result += '<span style="color:' + cat.color + '">' + escapeHtml(kw) + '</span>';
+                        i += kw.length;
+                        matched = true;
+                        break;
+                    }
+                }
+                if (matched) break;
+            }
+
+            if (!matched) {
+                // Myanmar chars
+                if (/[\u1000-\u109F]/.test(code[i])) {
+                    let j = i;
+                    while (j < code.length && /[\u1000-\u109F\s]/.test(code[j])) j++;
+                    result += '<span style="color:#abb2bf">' + escapeHtml(code.slice(i, j)) + '</span>';
+                    i = j;
+                } else if (/[a-zA-Z_]/.test(code[i])) {
+                    let j = i;
+                    while (j < code.length && /[a-zA-Z0-9_]/.test(code[j])) j++;
+                    result += '<span style="color:#e5c07b">' + escapeHtml(code.slice(i, j)) + '</span>';
+                    i = j;
+                } else {
+                    result += escapeHtml(code[i]);
+                    i++;
+                }
+            }
         }
-        function clearEditor() {
-            document.getElementById('editor').value = '';
+        return result;
+    }
+
+    function escapeHtml(text) {
+        return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function updateEditor() {
+        const code = editor.value;
+        highlight.innerHTML = highlightCode(code) + '\n';
+        // Update line numbers
+        const lines = code.split('\n');
+        lineNumbers.innerHTML = lines.map((_, i) => `<div style="padding:1px 0">${i + 1}</div>`).join('');
+    }
+
+    function syncScroll() {
+        highlight.scrollTop = editor.scrollTop;
+        highlight.scrollLeft = editor.scrollLeft;
+        lineNumbers.scrollTop = editor.scrollTop;
+    }
+
+    function handleTab(e) {
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            const start = editor.selectionStart;
+            const end = editor.selectionEnd;
+            editor.value = editor.value.substring(0, start) + '    ' + editor.value.substring(end);
+            editor.selectionStart = editor.selectionEnd = start + 4;
+            updateEditor();
         }
+    }
+
+    // Simple Myanmar code executor (runs in browser)
+    function runCode() {
+        const code = editor.value;
+        const output = document.getElementById('output');
+        const lines = code.split('\n');
+        const outputs = [];
+        const vars = {};
+        let indentStack = [];
+
+        for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed || trimmed.startsWith('#')) continue;
+
+            // Variable declaration
+            const declMatch = trimmed.match(/^(?:အတည်|ကိန်း|နေရာ)\s+(.+?)\s*=\s*(.+)/);
+            if (declMatch) {
+                let val = evalMyanExpr(declMatch[2], vars);
+                vars[declMatch[1].trim()] = val;
+                continue;
+            }
+
+            // Print
+            const printMatch = trimmed.match(/ပုံနှိပ်\((.+)\)$/);
+            if (printMatch) {
+                outputs.push(evalMyanExpr(printMatch[1], vars));
+                continue;
+            }
+
+            // For loop (simplified)
+            const forMatch = trimmed.match(/အတွက်\s+(\S+)\s+in\s+ပတ်လမ်း\((\d+)\):/);
+            if (forMatch) {
+                const n = parseInt(forMatch[2].replace(/[၀-၉]/g, d => '၀၁၂၃၄၅၆၇၈၉'.indexOf(d)));
+                for (let i = 0; i < n; i++) {
+                    vars[forMatch[1]] = i;
+                    // Execute body lines (simplified)
+                    outputs.push(String(i));
+                }
+                continue;
+            }
+
+            // While (simplified - skip for now)
+            // If (simplified - skip for now)
+        }
+
+        if (outputs.length > 0) {
+            output.innerHTML = outputs.map(o => `<div class="output-line">${escapeHtml(String(o))}</div>`).join('');
+        } else {
+            output.innerHTML = '<p class="output-placeholder">"ပုံနှိပ်" ခလုတ်ကို နှိပ်ပါ...</p>';
+        }
+    }
+
+    function evalMyanExpr(expr, vars) {
+        expr = expr.trim();
+        // Myanmar digits
+        expr = expr.replace(/[၀-၉]/g, d => '၀၁၂၃၄၅၆၇၈၉'.indexOf(d));
+
+        // String literal
+        if ((expr.startsWith('"') && expr.endsWith('"')) || (expr.startsWith("'") && expr.endsWith("'"))) {
+            return expr.slice(1, -1);
+        }
+
+        // String concatenation
+        const plusIdx = expr.lastIndexOf('+');
+        if (plusIdx > 0) {
+            const left = evalMyanExpr(expr.slice(0, plusIdx), vars);
+            const right = evalMyanExpr(expr.slice(plusIdx + 1), vars);
+            return String(left) + String(right);
+        }
+
+        // Number
+        const num = Number(expr);
+        if (!isNaN(num)) return num;
+
+        // Variable lookup
+        if (vars && vars.hasOwnProperty(expr)) return vars[expr];
+
+        return expr;
+    }
+
+    function newFile() {
+        editor.value = '# သစ်ပြု .myan ဖိုင်\n\nအဓိပ္ပာယ် မင်္ဂလာပါ():\n    ပုံနှိပ်("မင်္ဂလာပါ!")\n\nမင်္ဂလာပါ()';
+        updateEditor();
+        clearOutput();
+    }
+
+    function copyCode() {
+        navigator.clipboard.writeText(editor.value).then(() => {
+            const btn = event.currentTarget;
+            const orig = btn.innerHTML;
+            btn.innerHTML = '✅ Copied!';
+            setTimeout(() => btn.innerHTML = orig, 1500);
+        });
+    }
+
+    function clearEditor() { editor.value = ''; updateEditor(); clearOutput(); }
+    function clearOutput() { document.getElementById('output').innerHTML = '<p class="output-placeholder">"ပုံနှိပ်" ခလုတ်ကို နှိပ်ပါ...</p>'; }
     </script>
 </body>
 </html>
